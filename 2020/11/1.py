@@ -30,7 +30,7 @@ def solve_part_1(d, iterations=0, seated=0):
                         if d[index] == '#':
                             occ += 1
 
-                if occ > 0:
+                if occ == 0:
                     d_temp[k] = '#'
 
             if v == '#':
@@ -48,7 +48,6 @@ def solve_part_1(d, iterations=0, seated=0):
     for k, v in d_temp.items():
         if v == '#':
             seated_temp += 1
-
     if seated_temp == seated:
         print('part 1:', seated_temp)
         return
