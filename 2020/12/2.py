@@ -1,5 +1,4 @@
-import json
-from math import sin, cos, radians, ceil
+from math import sin, cos, radians
 
 
 def solve(data):
@@ -32,22 +31,17 @@ def solve(data):
             qx = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
             qy = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
             crds = (round(qx), round(qy))
-            print(last_waypoint, crds)
             waypoint.append(crds)
 
             continue
         elif direction == 'F':
-            # print(value)
-            '-----'
             for i in range(value):
                 x = coordinates[-1][0]
                 y = coordinates[-1][1]
                 x += waypoint[-1][0]
                 y += waypoint[-1][1]
                 coordinates.append((x, y))
-                # print(x, y)
         else:
-            # move the waypoint
             for i in range(value):
                 x = waypoint[-1][0]
                 y = waypoint[-1][1]
@@ -65,15 +59,4 @@ def solve(data):
 if __name__ == '__main__':
     with open('input.txt') as f:
         data = [(i[0], int(i[1:])) for i in f.read().split()]
-    wrong = [
-        130971,
-        57426,
-        18081,
-        76829
-    ]
-    ans = solve(data)
-    if ans in wrong:
-        print('WRONG', ans)
-    else:
-        print("Part 2:", ans)
-    # print("Part 2:", solve2(data))
+    print("Part 2:", solve(data))
