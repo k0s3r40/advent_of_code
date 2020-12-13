@@ -1,41 +1,48 @@
-def solve_1(data):
-    my_ts = data['my_ts']
-    schedule = {}
-    i = 0
-    part_1_solved = False
-    while True:
-        schedule[i] = {}
-        for k, x in data['bus_data'].items():
-            if x != 'x':
-                x = int(x)
-                if i % x == 0:
-                    schedule[i][(k, x)] = 'D'
-                    if i > my_ts and part_1_solved is False:
-                        print('Part 1', (i - my_ts) * x)
-                        part_1_solved = True
-                else:
-                    schedule[i][(k, x)] = '-'
-            else:
-                schedule[i][(k, x)] = '-'
+"""
+4,5  |-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+3,3+1|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+2,3  |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+1,2  |--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
+0,1  |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+     0123456789111111111122222222223333333333444444444455555555556666666666
+               012345678901234567890123456789012345678901234567890123456789
 
-        if i > len(data['bus_data']):
-            consecutive = 0
-            r = range((i + 1) - len(data['bus_data']), i + 1)
-            for index, z in enumerate(r):
-                v = [v for k, v in schedule[z].items()][index]
-                k = [k for k, v in schedule[z].items()][index]
-                if 'x' in k:
-                    consecutive += 1
-                elif v == 'D':
-                    consecutive += 1
-            if consecutive == len(data['bus_data']):
-                print('Part 2', (i + 1) - len(data['bus_data']))
-                return
-        try:
-            del schedule[i - len(data['bus_data'])]
-        except:
-            pass
-        i += 1
+
+The logic which should be implemented is
+to find the biggest common divider between all of the bus_speeds + their indexes in the columns
+
+"""
+
+
+def solve(data):
+    bus_data = [(index, value) for index, value in enumerate([int(v) if v != 'x' else 'x' for k, v in data['bus_data'].items()])]
+    position = 0
+    speed = 0
+    my_ts = data['my_ts']
+    bus_found = False
+    while bus_found is False:
+        for index, bus_speed in bus_data:
+            if bus_speed != 'x':
+                if my_ts % bus_speed == 0:
+                    print('Part 1:', my_ts)
+                    bus_found = True
+        my_ts += 1
+
+    for index, bus_speed in bus_data:
+        if bus_speed != 'x':
+            if index == 0:
+                position = 0
+                speed = bus_speed
+                continue
+            while (position + index) % bus_speed != 0:
+                position += speed
+            speed *= bus_speed
+
+    for index, bus_speed in bus_data:
+        if bus_speed != 'x':
+            assert (position + index) % bus_speed == 0
+
+    print('Part 2:', position)
 
 
 if __name__ == '__main__':
@@ -44,4 +51,4 @@ if __name__ == '__main__':
 
     d = {'my_ts': int(data[0]),
          'bus_data': {index: i for index, i in enumerate(data[1].split(','))}}
-    solve_1(d)
+    solve(d)
