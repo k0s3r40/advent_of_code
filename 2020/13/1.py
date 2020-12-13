@@ -7,10 +7,6 @@
      0123456789111111111122222222223333333333444444444455555555556666666666
                012345678901234567890123456789012345678901234567890123456789
 
-
-The logic which should be implemented is
-to find the biggest common divider between all of the bus_speeds + their indexes in the columns
-
 """
 
 
