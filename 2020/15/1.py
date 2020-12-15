@@ -1,7 +1,7 @@
-def solve_1(data, d):
+def solve_1(data, d, r):
     i = len(data) + 1
     last = data[-1]
-    while i <= 2020:
+    while i <= r:
         if len(d[last]) <= 1:
             next_digit = 0
         else:
@@ -16,7 +16,7 @@ def solve_1(data, d):
         last = next_digit
 
         i += 1
-    print('Part 1:', last)
+    return last
 
 
 if __name__ == '__main__':
@@ -29,4 +29,13 @@ if __name__ == '__main__':
         else:
             d[i].append(index)
 
-    solve_1(data, d)
+    print('Part 1:', solve_1(data, d, 2020))
+
+    d = {}
+    for index, i in enumerate(data, start=1):
+        if d.get(i, None) is None:
+            d[i] = [index]
+        else:
+            d[i].append(index)
+
+    print('Part 2:', solve_1(data, d, 30000000))
