@@ -16,12 +16,6 @@ def get_neighbours(crd):
 
 
 def solve(data, r):
-    for k in list(data.keys()):
-        active = 0
-        neighbours = get_neighbours(k)
-        for neighbour in neighbours:
-            if data.get(neighbour, None) is None:
-                data[neighbour] = '.'
     for i in range(r):
         for k in list(data.keys()):
             active = 0
