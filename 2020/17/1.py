@@ -10,33 +10,32 @@ def get_neighbours(crd):
                 neighbours.append((x, y, z))
 
     neighbours = [i for i in neighbours if i != crd]
-    neighbours = [i for i in neighbours if any([cc == i[index] for index, cc in enumerate(crd)])]
-
     return neighbours
 
 
 def solve(data, r):
+    valid_crds = set([k for k, v in data.items() if v == '#'])
     for i in range(r):
-        for k in list(data.keys()):
+        temp_elements = {}
+        temp_crds = set(valid_crds)
+        for crd in list(valid_crds):
             active = 0
-            neighbours = get_neighbours(k)
-            for neighbour in neighbours:
-                if data.get(neighbour, None) is None:
-                    data[neighbour] = '.'
-
-            for n in neighbours:
-                if data[n] == '#':
+            for neighbour in get_neighbours(crd):
+                if neighbour in valid_crds:
                     active += 1
+                else:
+                    if temp_elements.get(neighbour, None) is None:
+                        temp_elements[neighbour] = 0
+                    temp_elements[neighbour] += 1
+            if active not in [2, 3]:
+                temp_crds.discard(crd)
 
-            if data[k] == '#':
-                if active not in [2, 3]:
-                    data[k] = '.'
+        for k, v in temp_elements.items():
+            if v == 3:
+                temp_crds.add(k)
 
-            if data[k] == '.':
-                if active == 3:
-                    data[k] = '#'
-
-    return (sum([1 for v in data.values() if v == '#']))
+        valid_crds = temp_crds
+    return len(valid_crds)
 
 
 if __name__ == '__main__':
@@ -47,11 +46,5 @@ if __name__ == '__main__':
     for x, value in enumerate(faces):
         for y, v in enumerate(value):
             data[(x, y, 0)] = v
-    wrong = [
-        304,
-    ]
-    ans = solve(data, 6)
-    if ans in wrong:
-        print('WRONG:', ans)
-    else:
-        print(ans)
+
+    print("Part 1:",solve(data, 6))
