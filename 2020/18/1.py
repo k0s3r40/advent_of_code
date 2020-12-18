@@ -56,5 +56,5 @@ if __name__ == '__main__':
 
         data = [int(i) if i not in symbols else i for i in data.split(' ')]
         total.append(solve_1(data))
-
-    print('Part 1:', sum(total))
+    # TO test part 1 remove the while loop in solve_1
+    print('Part 2:', sum(total))
