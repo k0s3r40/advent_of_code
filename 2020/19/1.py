@@ -23,13 +23,16 @@ def flatten_list(l, s=''):
 
 
 def solve(rules, messages):
-    regex = ''
-    rule = rules[0]
-    # print(rules[0][0])
+    for index, rule in enumerate(rules[0]):
+        for cindex, condition in enumerate(rule):
+            r = ''
+            for c in condition:
+                r += '|'
+                r += str(c)
+            rules[0][index][cindex] = '{' + r + '}'
 
-    regex = r"""
-       a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b
-    """
+
+
     regex = str(rules[0]).replace(
         '[', '('
     ).replace(
@@ -37,13 +40,35 @@ def solve(rules, messages):
     ).replace(
         ', ', ''
     ).replace(
-        '\'', ''
-    ).replace('))((', ')(')
-    print(regex)
+        '\'\'', '|'
+    ).replace(
+        '\'',''
+    ).replace(
+        '{|', ''
+    ).replace(
+        '}\"',''
+    ).replace('}', '').replace('\"', '')
+    print("a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b")
+
+    print(regex.strip(')').strip('('))
+    # return
     # regex = regex[1:-1]
     # re_elements_to_replace = re.findall(r'\w+\)\(\w+', regex)
     # for i in re_elements_to_replace:
-    #     regex = regex.replace(i, i.replace(')(', '|'))
+    #     print(i)
+        # regex = regex.replace(i, i.replace(')(', '|').replace(')', '').replace('(', ''))
+    # re_elements_to_replace = re.findall(r'\(\(\w+', regex)
+    # for i in re_elements_to_replace:
+    #     print(i)
+    #     regex = regex.replace(i, i.replace('((', ''))
+    # regex = regex.replace('))((', ')(')
+    # regex = regex.replace('))((', '))|((')
+    # regex = regex.replace('((((', '((')
+    # regex = regex.replace('))))', '))')
+
+    # regex = regex.strip('(')
+    # regex = regex.strip(')')
+
     # re_elements_to_replace = re.findall(r'\(\(\w+', regex)
     # for i in re_elements_to_replace:
     #     regex = regex.replace(i, i.replace('((', '('))
@@ -94,4 +119,18 @@ if __name__ == '__main__':
             for index, condition in enumerate(d[i]):
                 d[i][index] = [str(x) if x not in to_replace.keys() else to_replace[x] for x in d[i][index]]
 
+    # for i in range(10):
+    #     for i in list(d):
+    #         if not isinstance(d[i], str):
+    #             for index, condition in enumerate(d[i]):
+    #                 try:
+    #                     d[i][index] = ''.join(d[i][index])
+    #                 except:
+    #                     pass
+    #
+    # for i in list(d):
+    #     if not isinstance(d[i], str):
+    #         for index, condition in enumerate(d[i]):
+    #             print(d[i][index])
+    # d[i][index] = [''.join(x) for x in  d[i][index]]
     solve(d, messages)
