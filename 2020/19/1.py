@@ -3,6 +3,7 @@ from functools import reduce
 from itertools import chain
 import re
 
+
 def check_sub(rules):
     for rule in rules[0]:
         for condition in rule:
@@ -23,25 +24,48 @@ def flatten_list(l, s=''):
 
 def solve(rules, messages):
     regex = ''
-    for rule in rules[0]:
-        for index, r in enumerate(rule):
-            if isinstance(r, str):
-                regex += f'({r})'
-            else:
-                for i in r:
-                    # print(flatten_list(i)[:-4])
-                    regex += f'(({flatten_list(i)[:-4]})'
+    rule = rules[0]
+    # print(rules[0][0])
 
+    regex = r"""
+       a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b
+    """
+    regex = str(rules[0]).replace(
+        '[', '('
+    ).replace(
+        ']', ')'
+    ).replace(
+        ', ', ''
+    ).replace(
+        '\'', ''
+    ).replace('))((', ')(')
+    print(regex)
+    # regex = regex[1:-1]
+    # re_elements_to_replace = re.findall(r'\w+\)\(\w+', regex)
+    # for i in re_elements_to_replace:
+    #     regex = regex.replace(i, i.replace(')(', '|'))
+    # re_elements_to_replace = re.findall(r'\(\(\w+', regex)
+    # for i in re_elements_to_replace:
+    #     regex = regex.replace(i, i.replace('((', '('))
+    # print('a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b')
+    # print(regex)
+
+    # regex = regex.replace(')|(', '|')
     # for i in range(10):
     #     regex = regex.replace("|)|()", ')').replace('|)','')
 
     # regex = regex.replace('()', '').replace('|)', ')').replace('))|(', '(')
     # regex =
-    print(regex)
-    #not 468
-    # r = re.compile(regex, re.VERBOSE)
-    # valid_messages = list(filter(r.match, messages)) # Read Note
-    # print(len(valid_messages))
+
+    # print(regex)
+    # not 468, 416, 469
+
+    r = re.compile(regex, re.VERBOSE)
+    valid_messages = list(filter(r.match, messages))
+
+    print(len(valid_messages))
+
+
 if __name__ == '__main__':
     with open('input.txt') as f:
         data, messages = f.read().split('\n\n')
