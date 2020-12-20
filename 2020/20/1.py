@@ -1,6 +1,3 @@
-from random import randint
-
-
 class Tile:
     def __init__(self, tile, name):
         self.tile = tile
@@ -9,6 +6,13 @@ class Tile:
         self.neighbours_left = set()
         self.neighbours_right = set()
         self.name = name
+
+    def sides(self):
+        return [self.top(), self.top()[::-1],
+                self.bot(), self.bot()[::-1],
+                self.right(), self.right()[::-1],
+                self.left(), self.left()[::-1]
+                ]
 
     def top(self):
         return ''.join(self.tile[0])
@@ -75,7 +79,7 @@ def find_neighbours(d):
                     v.rotate_90()
                     v.flipY()
 
-                if v.top() ==y.top():
+                if v.top() == y.top():
                     v.flipX()
 
                 if v.left() == y.right()[::-1]:
@@ -99,6 +103,23 @@ def find_neighbours(d):
     return d
 
 
+def solve_1(d):
+    a = {k: 0 for k, v in d.items()}
+    for k, v in d.items():
+        for y, x in d.items():
+            if k != y:
+                for side in v.sides():
+                    for _ in x.sides():
+                        if side == _:
+                            a[k] += 1
+    answer = 1
+    for k, v in a.items():
+        if v == 4:
+            answer *= int(k.split(' ')[1][:-1])
+    return answer
+
+
+
 if __name__ == '__main__':
     with open('input.txt') as f:
         data = f.read().split('\n\n')
@@ -107,36 +128,4 @@ if __name__ == '__main__':
         key = i.split('\n')[0]
         tile = [x for x in i.split('\n')[1:]]
         d[key] = Tile(tile, name=key)
-    d = find_neighbours(d)
-    #
-    # while True:
-    #     is_ok = True
-    #     d = find_neighbours(d)
-    #     for k, v in d.items():
-    #         if v.neighbours_count() <2:
-    #             print(v.neighbours_count())
-    #             is_ok = False
-    #     if is_ok:
-    #         break
-    #     else:
-    #         for k, v in d.items():
-    #             v.clear_neighbours()
-    corners = 0
-    # while True:
-    #     for k, v in d.items():
-    #         if v.neighbours_count() == 2:
-    #             corners +=1
-    #     if corners != 4:
-    #         find_neighbours(d)
-    #     else:
-    #         break
-
-    # part_1 = 1
-    #
-    for k, v in d.items():
-        # print(k, v.neighbours_count(), v.neighbours_top, v.neighbours_left, v.neighbours_right, v.neighbours_bot)
-
-        if v.neighbours_count() <= 2:
-            print(v.neighbours_count(), v.name)
-    #         part_1 *=int(v.name.split(' ')[1][:-1])
-    # print(part_1)
+    print(solve_1(d))
