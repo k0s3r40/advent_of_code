@@ -1,136 +1,20 @@
-import operator
-from functools import reduce
-from itertools import chain
-import re
+def test(s,seq): # can we produce string s using rules list seq?
+    if s == '' or seq == []: return s == '' and seq == [] # if both empty, True; if one, False
+    r = rules[seq[0]]
+    if '"' in r:
+        return test(s[1:], seq[1:]) if s[0] in r else False # strip first character, False if cannot
+    else:
+        return any(test(s, t + seq[1:]) for t in r) # expand first term in seq rules list
 
+def parse(s): # return rule pair (n,e) e.g. (2, [[2,3],[3,2]]) or (42,'"a"')
+    n,e = s.split(": ")
+    return (int(n),e) if '"' in e else (int(n), [[int(r) for r in t.split()] for t in e.split("|")])
 
-def check_sub(rules):
-    for rule in rules[0]:
-        for condition in rule:
-            if isinstance(rules[condition], str):
-                return rules[condition]
-            else:
-                check_sub(rules[condition])
+rule_text, messages = [x.splitlines() for x in open("input.txt").read().split("\n\n")]
+rules = dict(parse(s) for s in rule_text)            
+print("Part 1:", sum(test(m,[0]) for m in messages))       
 
-
-def flatten_list(l, s=''):
-    for i in l:
-        try:
-            s += f'{"".join(i)})|('
-        except:
-            s = flatten_list(i, s)
-    return f'{s}'
-
-
-def solve(rules, messages):
-    for index, rule in enumerate(rules[0]):
-        for cindex, condition in enumerate(rule):
-            r = ''
-            for c in condition:
-                r += '|'
-                r += str(c)
-            rules[0][index][cindex] = '{' + r + '}'
-
-
-
-    regex = str(rules[0]).replace(
-        '[', '('
-    ).replace(
-        ']', ')'
-    ).replace(
-        ', ', ''
-    ).replace(
-        '\'\'', '|'
-    ).replace(
-        '\'',''
-    ).replace(
-        '{|', ''
-    ).replace(
-        '}\"',''
-    ).replace('}', '').replace('\"', '')
-    print("a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b")
-
-    print(regex.strip(')').strip('('))
-    # return
-    # regex = regex[1:-1]
-    # re_elements_to_replace = re.findall(r'\w+\)\(\w+', regex)
-    # for i in re_elements_to_replace:
-    #     print(i)
-        # regex = regex.replace(i, i.replace(')(', '|').replace(')', '').replace('(', ''))
-    # re_elements_to_replace = re.findall(r'\(\(\w+', regex)
-    # for i in re_elements_to_replace:
-    #     print(i)
-    #     regex = regex.replace(i, i.replace('((', ''))
-    # regex = regex.replace('))((', ')(')
-    # regex = regex.replace('))((', '))|((')
-    # regex = regex.replace('((((', '((')
-    # regex = regex.replace('))))', '))')
-
-    # regex = regex.strip('(')
-    # regex = regex.strip(')')
-
-    # re_elements_to_replace = re.findall(r'\(\(\w+', regex)
-    # for i in re_elements_to_replace:
-    #     regex = regex.replace(i, i.replace('((', '('))
-    # print('a((aa|bb)(ab|ba))|((ab|ba)(aa|bb))b')
-    # print(regex)
-
-    # regex = regex.replace(')|(', '|')
-    # for i in range(10):
-    #     regex = regex.replace("|)|()", ')').replace('|)','')
-
-    # regex = regex.replace('()', '').replace('|)', ')').replace('))|(', '(')
-    # regex =
-
-    # print(regex)
-    # not 468, 416, 469
-
-    r = re.compile(regex, re.VERBOSE)
-    valid_messages = list(filter(r.match, messages))
-
-    print(len(valid_messages))
-
-
-if __name__ == '__main__':
-    with open('input.txt') as f:
-        data, messages = f.read().split('\n\n')
-        data = data.split('\n')
-        messages = messages.split('\n')
-    d = {}
-
-    for i in data:
-        rule_id = int(i.split(':')[0])
-        conditions = i.split(':')[1].split('|')
-        d[rule_id] = []
-        for c in conditions:
-            if '\"' in c:
-                c = c.replace('\"', '').strip()
-                d[rule_id] = c
-            else:
-                c = [int(y) for y in (c.split())]
-                d[rule_id].append(c)
-
-    to_replace = {}
-    for i in list(d):
-        to_replace[i] = d[i]
-
-    for i in list(d):
-        if not isinstance(d[i], str):
-            for index, condition in enumerate(d[i]):
-                d[i][index] = [str(x) if x not in to_replace.keys() else to_replace[x] for x in d[i][index]]
-
-    # for i in range(10):
-    #     for i in list(d):
-    #         if not isinstance(d[i], str):
-    #             for index, condition in enumerate(d[i]):
-    #                 try:
-    #                     d[i][index] = ''.join(d[i][index])
-    #                 except:
-    #                     pass
-    #
-    # for i in list(d):
-    #     if not isinstance(d[i], str):
-    #         for index, condition in enumerate(d[i]):
-    #             print(d[i][index])
-    # d[i][index] = [''.join(x) for x in  d[i][index]]
-    solve(d, messages)
+rule_text += ["8: 42 | 42 8","11: 42 31 | 42 11 31"]
+rules = dict(parse(s) for s in rule_text)
+print(rules)
+print("Part 2:", sum(test(m,[0]) for m in messages))
