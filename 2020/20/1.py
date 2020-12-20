@@ -1,98 +1,142 @@
+from random import randint
+
+
+class Tile:
+    def __init__(self, tile, name):
+        self.tile = tile
+        self.neighbours_top = set()
+        self.neighbours_bot = set()
+        self.neighbours_left = set()
+        self.neighbours_right = set()
+        self.name = name
+
+    def top(self):
+        return ''.join(self.tile[0])
+
+    def bot(self):
+        return ''.join(self.tile[-1])
+
+    def left(self):
+        return ''.join([i[0] for i in self.tile])
+
+    def right(self):
+        return ''.join([i[-1] for i in self.tile])
+
+    def flipX(self):
+        self.tile = [i[::-1] for i in self.tile]
+
+    def flipY(self):
+        self.tile = [i for i in self.tile[::-1]]
+
+    def rotate_90(self):
+        new_tile = []
+        self.flipX()
+        for index, value in enumerate(self.tile):
+            new_tile.append(''.join([i[index] for i in self.tile]))
+        self.tile = new_tile
+
+    def clear_neighbours(self):
+        if len(self.neighbours_bot) >= 1:
+            self.neighbours_bot = set()
+        if len(self.neighbours_top) >= 1:
+            self.neighbours_top = set()
+        if len(self.neighbours_left) >= 1:
+            self.neighbours_left = set()
+        if len(self.neighbours_right) >= 1:
+            self.neighbours_right = set()
+
+    def neighbours_count(self):
+        return sum([len(self.neighbours_left),
+                    len(self.neighbours_right),
+                    len(self.neighbours_top),
+                    len(self.neighbours_bot)])
+
+
+def find_neighbours(d):
+    for k, v in d.items():
+        for x, y in d.items():
+            if k != x:
+                if v.bot() == y.right():
+                    v.rotate_90()
+                    v.rotate_90()
+                    v.rotate_90()
+
+                if v.bot() == y.left():
+                    v.rotate_90()
+                    v.flipY()
+
+                if v.top() == y.left():
+                    v.rotate_90()
+                    v.rotate_90()
+                    v.rotate_90()
+
+                if v.left() == y.left():
+                    v.rotate_90()
+                    v.rotate_90()
+                    v.flipY()
+
+                if v.top() ==y.top():
+                    v.flipX()
+
+                if v.left() == y.right()[::-1]:
+                    v.flipY()
+
+                if v.right() == y.left()[::-1]:
+                    v.flipY()
+
+                if v.bot() == y.top():
+                    v.neighbours_bot.add(y.name)
+
+                if v.top() == y.bot():
+                    v.neighbours_bot.add(y.name)
+
+                if v.left() == y.right():
+                    v.neighbours_left.add(y.name)
+
+                if v.right() == y.left():
+                    v.neighbours_right.add(y.name)
+
+    return d
+
+
 if __name__ == '__main__':
     with open('input.txt') as f:
         data = f.read().split('\n\n')
     d = {}
     for i in data:
         key = i.split('\n')[0]
-        original = [x for x in i.split('\n')[1:]]
-        original_reversed = [x[::-1] for x in original]
-        rotated = [x[0] for x in list(zip(original[::-1]))]
-        rotated_reversed = [x[0] for x in list(zip(original_reversed))]
-        # print(original)
-        # print(original_reversed)
-        print(len(original), len(original_reversed), len(rotated_reversed), len(rotated))
-        original_values = [((original[0]),
-                            (original[-1])),
-                           (((''.join([y[0] for y in original]))),
-                            ((''.join([y[-1] for y in original]))))
-                           ]
-        original_reversed_values = [((original_reversed[0]),
-                                     (original_reversed[-1])),
-                                    (((''.join([y[0] for y in original_reversed]))),
-                                     ((''.join([y[-1] for y in original_reversed]))))
-                                    ]
-        rotated_values = [((rotated[0]),
-                           (rotated[-1])),
-                          (((''.join([y[0] for y in rotated]))),
-                           ((''.join([y[-1] for y in rotated]))))
-                          ]
-        rotated_reversed_values = [((rotated_reversed[0]),
-                                    (rotated_reversed[-1])),
-                                   (((''.join([y[0] for y in rotated_reversed]))),
-                                    ((''.join([y[-1] for y in rotated_reversed]))))
-                                   ]
+        tile = [x for x in i.split('\n')[1:]]
+        d[key] = Tile(tile, name=key)
+    d = find_neighbours(d)
+    #
+    # while True:
+    #     is_ok = True
+    #     d = find_neighbours(d)
+    #     for k, v in d.items():
+    #         if v.neighbours_count() <2:
+    #             print(v.neighbours_count())
+    #             is_ok = False
+    #     if is_ok:
+    #         break
+    #     else:
+    #         for k, v in d.items():
+    #             v.clear_neighbours()
+    corners = 0
+    # while True:
+    #     for k, v in d.items():
+    #         if v.neighbours_count() == 2:
+    #             corners +=1
+    #     if corners != 4:
+    #         find_neighbours(d)
+    #     else:
+    #         break
 
-        d[key] = {'0': {'t': original_values[0][1],
-                        'b': original_values[0][0],
-                        'l': original_values[1][0],
-                        'r': original_values[1][1],
-                        'occ_t': 0,
-                        'occ_b': 0,
-                        'occ_l': 0,
-                        'occ_r': 0,
-                        },
-                  '1': {'t': original_reversed_values[0][0],
-                        'b': original_reversed_values[0][1],
-                        'l': original_reversed_values[1][0],
-                        'r': original_reversed_values[1][1],
-                        'occ_t': 0,
-                        'occ_b': 0,
-                        'occ_l': 0,
-                        'occ_r': 0,
-                        },
-                  '2': {'t': rotated_values[1][1],
-                        'b': rotated_values[1][0],
-                        'l': rotated_values[0][0],
-                        'r': rotated_values[0][1],
-                        'occ_t': 0,
-                        'occ_b': 0,
-                        'occ_l': 0,
-                        'occ_r': 0,
-                        },
-                  '3': {'t': rotated_reversed_values[0][0],
-                        'b': rotated_reversed_values[0][1],
-                        'l': rotated_reversed_values[1][0][::-1],
-                        'r': rotated_reversed_values[1][1][::-1],
-                        'occ_t': 0,
-                        'occ_b': 0,
-                        'occ_l': 0,
-                        'occ_r': 0,
-                        }
-                  }
-    # angle one occurence top bot and one occurence left right
+    # part_1 = 1
+    #
+    for k, v in d.items():
+        # print(k, v.neighbours_count(), v.neighbours_top, v.neighbours_left, v.neighbours_right, v.neighbours_bot)
 
-    for k in list(d):
-        for sub_l in list(d[k]):
-            t = d[k][sub_l]['t']
-            b = d[k][sub_l]['b']
-            l = d[k][sub_l]['l']
-            r = d[k][sub_l]['r']
-            for y in list(d):
-                for i in d[y]:
-                    if t == d[y][i]['b']:
-                        d[y][i]['occ_t'] += 1
-                        d[k][sub_l]['occ_t'] += 1
-                    if b == d[y][i]['t']:
-                        d[y][i]['occ_b'] += 1
-                        d[k][sub_l]['occ_b'] += 1
-                    if l == d[y][i]['r']:
-                        d[y][i]['occ_l'] += 1
-                        d[k][sub_l]['occ_l'] += 1
-                    if r == d[y][i]['l']:
-                        d[y][i]['occ_r'] += 1
-                        d[k][sub_l]['occ_r'] += 1
-
-    for k in list(d):
-        for sub_l in list(d[k]):
-            print(k, d[k][sub_l])
-        print('----')
+        if v.neighbours_count() <= 2:
+            print(v.neighbours_count(), v.name)
+    #         part_1 *=int(v.name.split(' ')[1][:-1])
+    # print(part_1)
