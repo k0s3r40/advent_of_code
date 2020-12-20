@@ -6,13 +6,21 @@ class Tile:
         self.neighbours_left = set()
         self.neighbours_right = set()
         self.name = name
+        self.is_corner = False
 
     def sides(self):
-        return [self.top(), self.top()[::-1],
-                self.bot(), self.bot()[::-1],
-                self.right(), self.right()[::-1],
-                self.left(), self.left()[::-1]
-                ]
+        return {"top": self.top(),
+                "top_flipped": self.top()[::-1],
+                "bot": self.bot(),
+                "bot_flipped": self.bot()[::-1],
+                "right": self.right(),
+                "right_flipped": self.right()[::-1],
+                "left": self.left(),
+                "left_flipped": self.left()[::-1]
+                }
+
+    def sharps_count(self):
+        return sum([1 if i == '#' else 0 for i in ''.join(self.tile)])
 
     def top(self):
         return ''.join(self.tile[0])
@@ -105,19 +113,28 @@ def find_neighbours(d):
 
 def solve_1(d):
     a = {k: 0 for k, v in d.items()}
+    rel = {}
     for k, v in d.items():
         for y, x in d.items():
             if k != y:
-                for side in v.sides():
-                    for _ in x.sides():
-                        if side == _:
+                for side, side_v in v.sides().items():
+                    for side_key, side_value in x.sides().items():
+                        if side_v == side_value:
                             a[k] += 1
+                            if rel.get((k, y), None) is None:
+                                rel[(k, y)] = {}
+
+                            rel[(k, y)][len(rel[(k, y)])] = {(side, side_key): (v, x)}
+
+
     answer = 1
     for k, v in a.items():
         if v == 4:
             answer *= int(k.split(' ')[1][:-1])
+            for x, y in d.items():
+                if y.name == k:
+                    y.is_corner = True
     return answer
-
 
 
 if __name__ == '__main__':
@@ -128,4 +145,7 @@ if __name__ == '__main__':
         key = i.split('\n')[0]
         tile = [x for x in i.split('\n')[1:]]
         d[key] = Tile(tile, name=key)
-    print(solve_1(d))
+
+    print('Part 1:', solve_1(d))
+
+    find_neighbours(d)
