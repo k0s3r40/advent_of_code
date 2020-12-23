@@ -3,6 +3,8 @@ if __name__ == '__main__':
     moves = 100
     step = 3
     for i in range(moves):
+        # print('Move', i + 1)
+
         current_cup = cups[0]
         picked_up = cups[1:4]
         leftover_cups = cups[4:]
@@ -13,9 +15,27 @@ if __name__ == '__main__':
             if destination_cup < min(cups):
                 destination_cup = max(leftover_cups)
                 break
-        leftover_cups = ''.join(str(i) for i in leftover_cups).split(str(destination_cup))
-        leftover_cups = leftover_cups[0] + str(destination_cup) + ''.join([str(i) for i in picked_up]) + leftover_cups[1]
-        leftover_cups = [int(i) for i in leftover_cups] + [current_cup]
+        left_1 = []
+        left_2 = []
+        for i in leftover_cups:
+            if i != destination_cup:
+                left_1.append(i)
+            else:
+                break
+        for i in leftover_cups:
+            if i not in left_1:
+                left_2.append(i)
+        left_2 = left_2[1:]
+
+        leftover_cups = left_1 + [destination_cup] + picked_up + left_2 + [current_cup]
+
+        # leftover_cups = [int(i) for i in leftover_cups]+[current_cup]
         cups = leftover_cups
+        print(cups)
+        # cups = [destination_cup] + picked_up + leftover_cups + [current_cup]
+        # print('cups', cups)
+        # print('pick_up', picked_up)
+        # print('destination',destination_cup)
+    # print(cups)
     cups = ''.join([str(i) for i in cups]).split('1')
-    print('part 1:', cups[1] + cups[0])
+    print('part 1:',cups[1]+cups[0])
