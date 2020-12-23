@@ -47,6 +47,14 @@ class Tile:
             new_tile.append(''.join([i[index] for i in self.tile]))
         self.tile = new_tile
 
+    def remove_borders(self):
+        new_tile = []
+        for index, v in enumerate(self.tile):
+            if index > 0 and index < len(self.tile) - 1:
+                new_tile.append(v[1:-1])
+        self.tile = new_tile
+
+
     def clear_neighbours(self):
         if len(self.neighbours_bot) >= 1:
             self.neighbours_bot = set()
@@ -126,7 +134,6 @@ def solve_1(d):
 
                             rel[(k, y)][len(rel[(k, y)])] = {(side, side_key): (v, x)}
 
-
     answer = 1
     for k, v in a.items():
         if v == 4:
@@ -141,11 +148,34 @@ if __name__ == '__main__':
     with open('input.txt') as f:
         data = f.read().split('\n\n')
     d = {}
+    regex = '#\.\.\.\.##'
+    matches = 0
+    import re
     for i in data:
         key = i.split('\n')[0]
         tile = [x for x in i.split('\n')[1:]]
+        for i in tile:
+            if re.match(regex, i):
+                matches += 1
         d[key] = Tile(tile, name=key)
+
+
+
 
     print('Part 1:', solve_1(d))
 
-    find_neighbours(d)
+    total_sharp = 0
+    for k, v in d.items():
+        v.remove_borders()
+
+        total_sharp += v.sharps_count()
+    print(matches)
+
+    # 2699
+    # 2519
+    # 2594
+
+    # 2654
+    print(total_sharp-2084)
+    print(645/15)
+    print(total_sharp-15*8)

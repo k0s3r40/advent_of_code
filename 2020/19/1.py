@@ -13,9 +13,13 @@ if __name__ == '__main__':
         data, messages = f.read().split('\n\n')
         data = data.split('\n')
         messages = messages.split('\n')
-    # data += [f"8: {'|'.join([''.join(['42 '*(i+1)]) for i in range(50)])} ",
-    #          f"11: {'| '.join([''.join(['42 '*(i+1)+ '31 '*(i+1)]) for i in range(50)])}"
-    #          ]
+    a =  [f"8: {'|'.join([''.join(['42 '*(i+1)]) for i in range(50)])} ",
+             f"11: {'| '.join([''.join(['42 '*(i+1)+ '31 '*(i+1)]) for i in range(50)])}"
+             ]
+    # for i in a:
+    #     print(i)
+    #     print('---------')
+    # input()
     d = {}
 
     special = []
@@ -29,6 +33,7 @@ if __name__ == '__main__':
                 d[rule_id] = c
                 special.append(str(rule_id))
             else:
+
                 c = str([int(y) for y in (c.split())]).replace(']', ')').replace('[', '(').replace(',', '')
                 d[rule_id] += str(c)
     has_looped = False
@@ -46,7 +51,6 @@ if __name__ == '__main__':
 
                 for x in d[i].replace('(', '').replace(')', ' ').replace('[', '').replace(']', '').replace('|', '').split():
                     try:
-                        # print(x)
                         if x not in ['(', ')', ',', ' ', 'a', 'b', '\b', '+', '|']:
                             isinstance(int(i), int)
                             is_special = False
@@ -60,8 +64,9 @@ if __name__ == '__main__':
             break
         if d_temp == d:
             has_looped = True
-        for k, v in d.items():
-            print(k, v)
+
+        # for k, v in d.items():
+        #     print(k, v)
 
     regex = d[0].replace('))((', '))|((').replace(')(', '|').replace(' ', '')
     regex = f'^{regex}$'
