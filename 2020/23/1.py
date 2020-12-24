@@ -3,8 +3,6 @@ if __name__ == '__main__':
     moves = 100
     step = 3
     for i in range(moves):
-        # print('Move', i + 1)
-
         current_cup = cups[0]
         picked_up = cups[1:4]
         leftover_cups = cups[4:]
